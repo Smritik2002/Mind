@@ -30,7 +30,11 @@ class _EditpageState extends State<Editpage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Profilepage(),
+                ));
           },
         ),
       ),
@@ -41,10 +45,18 @@ class _EditpageState extends State<Editpage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              // Profile Picture
-              const CircleAvatar(
-                radius: 60,
-                backgroundImage: AssetImage('images/person.jpeg'),
+              // Profile Picture (Rectangle)
+              Container(
+                width: 70,
+                height: 70, // Rectangle shape with custom dimensionswh
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12), // Rounded corners
+
+                  image: const DecorationImage(
+                    image: AssetImage('images/aa.jpeg'),
+                    fit: BoxFit.cover, // Ensure the image covers the container
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
               // Name TextField
@@ -72,15 +84,14 @@ class _EditpageState extends State<Editpage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      Colors.white, // Black background for the button
+                      Colors.white, // White background for the button
                   padding:
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  // Red border
                 ),
                 child: Text(
                   'Save',
                   style: GoogleFonts.poppins(
-                    color: Colors.black, // Red text color for contrast
+                    color: Colors.black, // Black text color for contrast
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -109,7 +120,6 @@ class _EditpageState extends State<Editpage> {
         prefixIcon: Icon(icon, color: Colors.white),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          // Red border
         ),
       ),
     );

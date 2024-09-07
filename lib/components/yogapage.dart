@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mind/screen/homepage.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:mind/components/bottomnavigation.dart';
 import 'package:mind/components/searchpage.dart';
@@ -145,7 +146,11 @@ class _YogapageState extends State<Yogapage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Homepage(),
+                ));
           },
         ),
         actions: [

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mind/components/librarypage.dart';
+import 'package:mind/components/downloadpage.dart';
 import 'package:mind/components/profilepage.dart';
 import 'package:mind/screen/homepage.dart';
 
@@ -28,8 +28,8 @@ class BottomNavigationBarPage extends StatelessWidget {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.library_music),
-          label: 'Library',
+          icon: Icon(Icons.download),
+          label: 'Downloads',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),
@@ -54,7 +54,7 @@ class BottomNavigationBarPage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const Librarypage(),
+                builder: (context) => DownloadPage(),
               ),
             );
             break;

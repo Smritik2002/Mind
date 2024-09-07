@@ -115,15 +115,6 @@ class _HomepageState extends State<Homepage> {
         actions: [
           IconButton(
             icon: const Icon(
-              Icons.download,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              // Handle download action
-            },
-          ),
-          IconButton(
-            icon: const Icon(
               Icons.search,
               color: Colors.white,
             ),
