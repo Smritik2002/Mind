@@ -4,6 +4,10 @@ import 'package:mind/screen/homepage.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:mind/components/bottomnavigation.dart';
 import 'package:mind/components/searchpage.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:mind/components/downloadmanager.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class Sleepstoriespage extends StatefulWidget {
   const Sleepstoriespage({super.key});
@@ -127,6 +131,82 @@ class _SleepstoriespageState extends State<Sleepstoriespage> {
       });
     } else {
       print("Error: Invalid video ID.");
+    }
+  }
+
+  Future<void> _downloadVideo(Map<String, String> video) async {
+    final yt = YoutubeExplode();
+    try {
+      final videoId = YoutubePlayer.convertUrlToId(video['url'] ?? '');
+      if (videoId == null) throw Exception('Invalid YouTube URL');
+
+      final manifest = await yt.videos.streamsClient.getManifest(videoId);
+      final streams = manifest.muxed.sortByVideoQuality();
+
+      if (streams.isEmpty) throw Exception('No streams found');
+
+      // Show quality selection dialog
+      final selectedQuality = await showDialog<VideoQuality>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Select Download Quality'),
+            children: streams.map((stream) {
+              return SimpleDialogOption(
+                onPressed: () => Navigator.pop(context, stream.videoQuality),
+                child: Text(
+                    '${stream.videoQuality.name} - ${stream.size.totalMegaBytes.toStringAsFixed(2)} MB'),
+              );
+            }).toList(),
+          );
+        },
+      );
+
+      if (selectedQuality == null) return;
+
+      final streamInfo =
+          streams.firstWhere((s) => s.videoQuality == selectedQuality);
+      final stream = yt.videos.streams.get(streamInfo);
+
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/${video['title']}.mp4');
+
+      // Show download progress
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Downloading'),
+            content: const LinearProgressIndicator(),
+          );
+        },
+      );
+
+      final fileStream = file.openWrite();
+      await stream.pipe(fileStream);
+      await fileStream.flush();
+      await fileStream.close();
+
+      // Add to DownloadManager
+      DownloadManager.addDownloadedVideo({
+        'title': video['title'] ?? '',
+        'description': video['description'] ?? '',
+        'imageUrl': video['imageUrl'] ?? '',
+        'filePath': file.path,
+      });
+
+      Navigator.of(context).pop(); // Close progress dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Downloaded: ${video['title']}')),
+      );
+    } catch (e) {
+      print('Download error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Download failed: $e')),
+      );
+    } finally {
+      yt.close();
     }
   }
 
@@ -279,9 +359,7 @@ class _SleepstoriespageState extends State<Sleepstoriespage> {
                   height: 10,
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    _controller.play();
-                  },
+                  onPressed: () => _downloadVideo(videos[_currentVideoIndex]),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
