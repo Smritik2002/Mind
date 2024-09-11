@@ -54,7 +54,7 @@ class BottomNavigationBarPage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DownloadPage(),
+                builder: (context) => const DownloadPage(),
               ),
             );
             break;
